@@ -717,7 +717,7 @@ class TemplateProcessor
      * @param string $search
      * @param int $numberOfClones
      */
-    public function cloneRow($search, $numberOfClones): void
+    public function cloneRow($search, $numberOfClones, $rowRange = null): void
     {
         $search = static::ensureMacroCompleted($search);
 
@@ -751,6 +751,20 @@ class TemplateProcessor
                     break;
                 }
                 // This row was a spanned row, update $rowEnd and search for the next row.
+                $rowEnd = $extraRowEnd;
+            }
+            $xmlRow = $this->getSlice($rowStart, $rowEnd);
+        }
+
+        if ($rowRange) {
+            $extraRowEnd = $rowEnd;
+
+            for ($i = 1; $i < $rowRange; $i++) {
+                $extraRowStart = $this->findRowStart($extraRowEnd + 1);
+                $extraRowEnd = $this->findRowEnd($extraRowEnd + 1);
+
+                $tmpXmlRow = $this->getSlice($extraRowStart, $extraRowEnd);
+                
                 $rowEnd = $extraRowEnd;
             }
             $xmlRow = $this->getSlice($rowStart, $rowEnd);
